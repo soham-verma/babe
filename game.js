@@ -2,6 +2,7 @@
   const $ = (id) => document.getElementById(id);
   const state = {
     name: "babe",
+    mission: MISSIONS[0],
     hearts: 72,
     sanity: 78,
     eventI: 0,
@@ -137,9 +138,9 @@
   async function playEvent() {
     if (state.hearts <= 0) return end("dumped");
     if (state.sanity <= 0) return end("snapped");
-    if (state.eventI >= EVENTS.length) return finishNight();
+    if (state.eventI >= state.mission.events.length) return finishNight();
 
-    const ev = EVENTS[state.eventI];
+    const ev = state.mission.events[state.eventI];
     $("clock").textContent = fmtTime(ev.time[0], ev.time[1]);
     setNori(ev.mood, ev.pose);
     $("tv").classList.add("paused");
@@ -197,8 +198,8 @@
 
     setNori(c.h >= 8 ? "love" : c.h <= -10 ? "mad" : c.h < 0 ? "pout" : "smile", "idle");
     await typeText($("speech-text"), fillName(c.r), 14);
-    $("stage-dir").textContent = c.h <= -12 ? "the air in the room changes temperature." :
-      c.h >= 12 ? "she tries not to smile. she fails." : "the slime king is still waiting. so is she.";
+    const lines = state.mission.lines;
+    $("stage-dir").textContent = c.h <= -12 ? lines.cold : c.h >= 12 ? lines.warm : lines.neutral;
 
     const next = document.createElement("button");
     next.className = "choice";
@@ -211,7 +212,7 @@
     state.eventI += 1;
     if (state.hearts <= 0) return end("dumped");
     if (state.sanity <= 0) return end("snapped");
-    if (state.eventI >= EVENTS.length) return finishNight();
+    if (state.eventI >= state.mission.events.length) return finishNight();
     await playWindow();
     playEvent();
   }
@@ -220,8 +221,8 @@
     return new Promise((resolve) => {
       setNori("smile", "idle");
       $("tv").classList.remove("paused");
-      $("speech-text").textContent = "she's quiet. for now. space / tap the tv to jump.";
-      $("stage-dir").textContent = "a rare and probably cursed peace.";
+      $("speech-text").textContent = state.mission.lines.quiet;
+      $("stage-dir").textContent = state.mission.lines.quietDir;
       $("choices").innerHTML = "";
       const skip = document.createElement("button");
       skip.className = "choice";
@@ -243,6 +244,9 @@
   async function runPhone(ev) {
     showScreen("game-screen");
     $("phone-screen").classList.remove("hidden");
+    const contact = ev.contact || { name: "nori ♡", status: "active now · obviously" };
+    $("phone-name").textContent = contact.name;
+    $("phone-status").textContent = contact.status;
     const thread = $("thread");
     thread.innerHTML = "";
     $("phone-choices").innerHTML = "";
@@ -263,36 +267,73 @@
 
   function finishNight() {
     const f = state.flags;
+    const m = state.mission;
+    const chaos = m.chaos ? m.chaos(f, state) : f.sassy;
     if (state.hearts <= 0) return end("dumped");
     if (state.sanity <= 0) return end("snapped");
     if (state.hearts >= 88 && state.sanity < 40) return end("simp");
-    if ((f.quizWin && f.calledPretty && (f.saidLove || f.pancakes)) && state.hearts >= 70) return end("golden");
-    if ((f.sassy || f.calledJealous) && state.hearts >= 40 && state.sanity >= 40) return end("chaos");
+    if (m.golden(f, state)) return end("golden");
+    if (chaos && state.hearts >= 40 && state.sanity >= 40) return end("chaos");
     return end("survived");
   }
 
+  function loadProgress() {
+    try { return JSON.parse(localStorage.getItem("babe.endings") || "{}"); }
+    catch { return {}; }
+  }
+
+  function saveEnding(key) {
+    const all = loadProgress();
+    const list = all[state.mission.id] || [];
+    if (!list.includes(key)) list.push(key);
+    all[state.mission.id] = list;
+    try { localStorage.setItem("babe.endings", JSON.stringify(all)); } catch {}
+  }
+
+  function renderMissions() {
+    const progress = loadProgress();
+    const box = $("missions");
+    box.innerHTML = "";
+    MISSIONS.forEach((m) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "mission" + (m === state.mission ? " selected" : "");
+      b.setAttribute("aria-pressed", m === state.mission);
+      const found = (progress[m.id] || []).length;
+      const total = Object.keys(m.endings).length;
+      b.innerHTML = `<span class="mission-emoji">${m.emoji}</span>
+        <span class="mission-name">${m.name}</span>
+        <span class="mission-blurb">${m.blurb}</span>
+        <span class="mission-progress">${found} / ${total} endings</span>`;
+      b.addEventListener("click", () => selectMission(m));
+      box.appendChild(b);
+    });
+  }
+
+  function selectMission(m) {
+    state.mission = m;
+    $("pitch").innerHTML = m.pitch;
+    $("start-btn").textContent = m.cta;
+    audio.blip();
+    renderMissions();
+  }
+
   function end(key) {
-    const e = ENDINGS[key];
+    const e = state.mission.endings[key];
+    saveEnding(key);
     showScreen("ending-screen");
     $("phone-screen").classList.add("hidden");
     $("ending-kicker").textContent = e.kicker;
     $("ending-title").textContent = e.title;
     $("ending-body").textContent = e.body;
-    const rating = key === "golden" ? "9.5 / 10 — 'he paused'" :
-      key === "survived" ? "7 / 10 — 'the slime lived too'" :
-      key === "simp" ? "10 / 10 boyfriend, 0 / 10 gamer" :
-      key === "chaos" ? "6 / 10 — 'rude. hot. confusing.'" :
-      key === "snapped" ? "2 / 10 — 'he said he needed a minute'" :
-      "1 / 10 — 'he chose a mushroom'";
+    const found = loadProgress()[state.mission.id] || [];
     $("ending-stats").innerHTML = [
-      ["nori's rating", rating],
+      ["nori's rating", e.rating],
       ["her hearts", Math.round(state.hearts)],
       ["your sanity", Math.round(state.sanity)],
       ["times paused by nori", state.stats.paused],
-      ["texts received while she sat next to you", state.stats.texts],
-      ["slime knight score", Math.round(state.stats.score)],
-      ["pancakes promised", state.flags.pancakes ? "legally binding" : "she will remember"],
-      ["worm protocol", state.flags.worm ? "tiny couch: built" : "worm: dumped"]
+      ...state.mission.stats(state),
+      ["endings found", `${found.length} / ${Object.keys(state.mission.endings).length}`]
     ].map(([k, v]) => `<li><span>${k}</span><strong>${v}</strong></li>`).join("");
     audio.tone(key === "dumped" || key === "snapped" ? 180 : 520, 0.3, "triangle", 0.05);
   }
@@ -364,8 +405,13 @@
   function startNight() {
     const raw = $("player-name").value.trim().toLowerCase();
     state.name = raw || "babe";
-    state.hearts = 72;
-    state.sanity = 78;
+    const m = state.mission;
+    $("room").className = `room scene-${m.scene}`;
+    $("tv-title").textContent = m.tvTitle;
+    $("paused-stamp").textContent = m.stamp;
+    $("goal").textContent = `until ${m.goal}`;
+    state.hearts = m.start.hearts;
+    state.sanity = m.start.sanity;
     state.eventI = 0;
     state.flags = {};
     state.stats = { chipsLost: 0, timesMad: 0, texts: 0, paused: 0, score: 0 };
@@ -383,11 +429,14 @@
   function init() {
     mountNori();
     setNori("smile", "peek");
+    selectMission(state.mission);
     $("start-btn").addEventListener("click", startNight);
     $("again-btn").addEventListener("click", () => {
       showScreen("title-screen");
       setNori("smile", "peek");
+      renderMissions();
     });
+    $("retry-btn").addEventListener("click", startNight);
     $("mute-btn").addEventListener("click", () => {
       state.muted = !state.muted;
       $("mute-btn").textContent = state.muted ? "mute" : "sound";

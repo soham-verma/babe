@@ -299,31 +299,37 @@ const ENDINGS = {
   dumped: {
     kicker: "relationship status: loading error",
     title: "she went home.",
-    body: "Nori put on her shoes in the kind of silence that has a soundtrack. You got your screen back. It looks bigger. Worse."
+    body: "Nori put on her shoes in the kind of silence that has a soundtrack. You got your screen back. It looks bigger. Worse.",
+    rating: "1 / 10 — 'he chose a mushroom'"
   },
   snapped: {
     kicker: "sanity.exe has stopped working",
     title: "you said 'i need a minute'.",
-    body: "It came out like a fire alarm. She looked small for half a second, then powerful, then gone. The slime king clapped. You hate him."
+    body: "It came out like a fire alarm. She looked small for half a second, then powerful, then gone. The slime king clapped. You hate him.",
+    rating: "2 / 10 — 'he said he needed a minute'"
   },
   survived: {
     kicker: "2:00 AM achievement unlocked",
     title: "she's asleep on you.",
-    body: "You survived the night. She drools, just a little, like a threat. Tomorrow there will be pancakes, or there will be war. Tonight counts."
+    body: "You survived the night. She drools, just a little, like a threat. Tomorrow there will be pancakes, or there will be war. Tonight counts.",
+    rating: "7 / 10 — 'the slime lived too'"
   },
   simp: {
     kicker: "hearts: max. spine: missing",
     title: "you live here now.",
-    body: "Nori is delighted. You have not touched the controller in 49 minutes. She calls you perfect. The slime king sends thoughts and prayers."
+    body: "Nori is delighted. You have not touched the controller in 49 minutes. She calls you perfect. The slime king sends thoughts and prayers.",
+    rating: "10 / 10 boyfriend, 0 / 10 gamer"
   },
   chaos: {
     kicker: "matching each other's freak",
     title: "she's laughing.",
-    body: "You were mean in a way she likes. She bit your hoodie. You're both terrible. You'll get pancakes anyway."
+    body: "You were mean in a way she likes. She bit your hoodie. You're both terrible. You'll get pancakes anyway.",
+    rating: "6 / 10 — 'rude. hot. confusing.'"
   },
   golden: {
     kicker: "boyfriend of the year (disputed)",
     title: "she kept the star clip in.",
-    body: "You remembered the matcha. You called her pretty without being asked twice. She still sat on the game. She also stayed. That's the whole sport."
+    body: "You remembered the matcha. You called her pretty without being asked twice. She still sat on the game. She also stayed. That's the whole sport.",
+    rating: "9.5 / 10 — 'he paused'"
   }
 };

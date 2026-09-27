@@ -2,9 +2,18 @@
 
 You sat down to play one game. Nori sat down on the controller.
 
-**Play it:** [https://soham-fliight.github.io/babe/](https://soham-fliight.github.io/babe/)
+**Play it:** [https://soham-verma.github.io/babe/](https://soham-verma.github.io/babe/)
 
 Keep her hearts up. Keep your sanity. Survive until 2:00 AM.
+
+## Missions
+
+- **Couch Night** — one game. she sat on the controller. survive until 2:00 AM.
+- **Shopping Trip** — she needs one thing. carry the bags, survive the fitting room, reach the car by 5:00 PM.
+- **Dinner Date** — she doesn't care where you eat (she cares). listen to the megan story. phone down until 10:30 PM.
+- **Road Trip** — she drives, you navigate (badly). don't miss the exit. arrive by 3:00 PM.
+
+Each mission has six endings; the title screen tracks which ones you've found.
 
 ## How it works
 

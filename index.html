@@ -20,12 +20,8 @@
         <p class="eyebrow">one night. zero peace.</p>
         <h1>babe.</h1>
         <p class="tagline">an annoying girlfriend simulator</p>
-        <p class="pitch">
-          You sat down to play <em>one</em> game.
-          Nori sat down on the controller.
-          Keep her hearts up. Keep your sanity.
-          Survive until 2:00 AM.
-        </p>
+        <div id="missions" class="missions" role="group" aria-label="Choose a mission"></div>
+        <p class="pitch" id="pitch"></p>
         <label class="name-field">
           <span>she calls you</span>
           <input id="player-name" maxlength="16" placeholder="babe" value="babe" autocomplete="off" />
@@ -40,7 +36,10 @@
 
     <section id="game-screen" class="screen">
       <header class="hud">
-        <div class="clock" id="clock">8:00 PM</div>
+        <div class="clock-wrap">
+          <div class="clock" id="clock">8:00 PM</div>
+          <div class="goal" id="goal">until 2:00 AM</div>
+        </div>
         <div class="meters">
           <div class="meter hearts" title="Nori's mood">
             <span class="meter-label">nori</span>
@@ -57,7 +56,7 @@
       </header>
 
       <div class="stage">
-        <div class="room">
+        <div class="room scene-couch" id="room">
           <div class="window">
             <div class="city"></div>
             <div class="moon"></div>
@@ -100,8 +99,8 @@
         <div class="phone-head">
           <div class="phone-ava"></div>
           <div>
-            <strong>nori ♡</strong>
-            <small>active now · obviously</small>
+            <strong id="phone-name">nori ♡</strong>
+            <small id="phone-status">active now · obviously</small>
           </div>
         </div>
         <div id="thread" class="thread"></div>
@@ -116,7 +115,8 @@
         <p id="ending-body"></p>
         <ul class="stats" id="ending-stats"></ul>
         <div class="ending-actions">
-          <button id="again-btn" class="btn primary">try another night</button>
+          <button id="retry-btn" class="btn primary">play again</button>
+          <button id="again-btn" class="btn ghost">pick another mission</button>
         </div>
       </div>
     </section>
@@ -228,6 +228,7 @@
   </template>
 
   <script src="events.js"></script>
+  <script src="missions.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
